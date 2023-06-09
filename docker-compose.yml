@@ -1,0 +1,32 @@
+version: '3'
+services:
+  database:
+    container_name: symfony-fundamental-database
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: symfony-fundamental
+      MYSQL_USER: root
+      MYSQL_PASSWORD:
+  php-fpm:
+    build:
+      context: ./docker/php-fpm
+      dockerfile: Dockerfile
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    container_name: symfony-fundamental-php
+    user: "1000:1000"
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    ports:
+      - "7000:80"
+    container_name: symfony-fundamental-nginx
+    links:
+      - php-fpm
